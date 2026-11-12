@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
+import { CurrencyProvider } from './context/CurrencyContext';
 import MainLayout from './layouts/MainLayout';
 import ProtectedRoute from './components/ProtectedRoute';
 
@@ -16,20 +17,24 @@ import MyRequests from './pages/MyRequests';
 import Profile from './pages/Profile';
 import Dashboard from './pages/Dashboard';
 import Messages from './pages/Messages';
+import ExchangeMatching from './pages/ExchangeMatching';
+import Leaderboard from './pages/Leaderboard';
 import NotFound from './pages/NotFound';
 
 function App() {
   return (
-    <AuthProvider>
-      <BrowserRouter>
-        <Routes>
-          <Route element={<MainLayout />}>
+    <CurrencyProvider>
+      <AuthProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route element={<MainLayout />}>
             {/* Public Routes */}
             <Route path="/" element={<Home />} />
             <Route path="/register" element={<Register />} />
             <Route path="/login" element={<Login />} />
             <Route path="/marketplace" element={<Marketplace />} />
             <Route path="/listings/:id" element={<ListingDetails />} />
+            <Route path="/leaderboard" element={<Leaderboard />} />
 
             {/* Protected Routes */}
             <Route
@@ -81,6 +86,14 @@ function App() {
               }
             />
             <Route
+              path="/exchange-matches"
+              element={
+                <ProtectedRoute>
+                  <ExchangeMatching />
+                </ProtectedRoute>
+              }
+            />
+            <Route
               path="/dashboard"
               element={
                 <ProtectedRoute adminOnly={true}>
@@ -95,6 +108,7 @@ function App() {
         </Routes>
       </BrowserRouter>
     </AuthProvider>
+    </CurrencyProvider>
   );
 }
 

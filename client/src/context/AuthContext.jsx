@@ -48,7 +48,7 @@ export const AuthProvider = ({ children }) => {
       if (res.data.token) {
         localStorage.setItem('reclothing_token', res.data.token);
       }
-      toast.success('Registration successful! Welcome to ReClothing.');
+      toast.success('Registration successful! Welcome to StyleCycle.');
     }
     return res;
   };

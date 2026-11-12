@@ -1,15 +1,16 @@
 import React, { useState } from 'react';
 import { X, Send, ShoppingBag, ArrowLeftRight, Info, MapPin, Clock, PackageCheck } from 'lucide-react';
 import { requestApi } from '../api/requestApi';
+import { formatCurrency } from '../utils/formatCurrency';
+import CampusMeetupMap from './CampusMeetupMap';
 import toast from 'react-hot-toast';
 
 const CAMPUS_LOCATIONS = [
-  'Campus Library Front Entrance (Recommended)',
-  'Student Center & Dining Commons',
-  'North Academic Quad / Science Hall',
-  'Athletics & Recreation Complex',
-  'Main Campus Transit Hub & Gate',
-  'Residence Hall Central Lounge',
+  'RVCE Central Library & Food Court Plaza',
+  'PES University Food Court & OAT (Ring Road)',
+  'BMSCE Bull Temple Gate & Sports Complex',
+  'IISc Central Library & Coffee House (Malleshwaram)',
+  'Presidency University Central Courtyard & Canteen (Itgalpur)',
 ];
 
 const TIME_SLOTS = [
@@ -90,7 +91,7 @@ const RequestModal = ({ isOpen, onClose, listing, onSuccess, initialType = 'purc
               Seller: <span className="font-medium text-dark-900">{listing.seller?.name}</span> ({listing.seller?.college})
             </p>
             <p className="text-sm font-bold text-forest-800 mt-1">
-              {listing.listingType === 'For Exchange' ? 'For Exchange' : `$${listing.price}`}
+              {formatCurrency(listing.price, listing.listingType)}
             </p>
           </div>
         </div>
@@ -151,6 +152,12 @@ const RequestModal = ({ isOpen, onClose, listing, onSuccess, initialType = 'purc
               />
             </div>
           )}
+
+          {/* Interactive Campus Meetup Map */}
+          <CampusMeetupMap
+            selectedSpot={{ name: meetupLocation }}
+            onSelectSpot={(spot) => setMeetupLocation(spot.name)}
+          />
 
           {/* Campus Meetup Location & Time Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">

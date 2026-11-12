@@ -41,6 +41,39 @@ const userSchema = new mongoose.Schema(
       enum: ['user', 'admin'],
       default: 'user',
     },
+    isVerifiedStudent: {
+      type: Boolean,
+      default: false,
+    },
+    studentIdNumber: {
+      type: String,
+      trim: true,
+      default: '',
+    },
+    otpCode: {
+      type: String,
+      default: '',
+    },
+    otpExpires: {
+      type: Date,
+      default: null,
+    },
+    reputationScore: {
+      type: Number,
+      default: 85, // Starting campus trust score
+    },
+    badges: {
+      type: [String],
+      default: ['Active Campus Member'],
+    },
+    sustainabilityPoints: {
+      type: Number,
+      default: 50,
+    },
+    itemsReusedCount: {
+      type: Number,
+      default: 0,
+    },
     wishlist: [
       {
         type: mongoose.Schema.Types.ObjectId,

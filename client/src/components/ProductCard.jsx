@@ -2,12 +2,14 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Heart, ArrowLeftRight, Tag, User } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import { formatCurrency } from '../utils/formatCurrency';
+import { useCurrency } from '../context/CurrencyContext';
+import UserAvatar from './UserAvatar';
 
 const FALLBACK_IMAGE = 'https://images.unsplash.com/photo-1489987707025-afc232f7ea0f?auto=format&fit=crop&w=600&q=80';
 
 const ProductCard = ({ listing }) => {
   const { user, toggleWishlist, isInWishlist } = useAuth();
+  const { formatPrice } = useCurrency();
   const [imgSrc, setImgSrc] = useState(
     listing.images?.[0] || FALLBACK_IMAGE
   );
@@ -135,17 +137,11 @@ const ProductCard = ({ listing }) => {
         {/* Seller Info & Price Footer */}
         <div className="mt-4 pt-3 border-t border-border/80 flex items-center justify-between">
           <div className="flex items-center gap-2 min-w-0 pr-2">
-            {listing.seller?.avatar ? (
-              <img
-                src={listing.seller.avatar}
-                alt={listing.seller.name}
-                className="w-6 h-6 rounded-full object-cover border border-border"
-              />
-            ) : (
-              <div className="w-6 h-6 rounded-full bg-forest-100 text-forest-800 flex items-center justify-center text-[10px] font-bold">
-                {listing.seller?.name?.charAt(0) || <User className="w-3 h-3" />}
-              </div>
-            )}
+            <UserAvatar
+              name={listing.seller?.name}
+              avatar={listing.seller?.avatar}
+              size="xs"
+            />
             <div className="min-w-0">
               <p className="text-xs font-medium text-dark-900 truncate">
                 {listing.seller?.name || 'Campus Student'}
@@ -158,7 +154,7 @@ const ProductCard = ({ listing }) => {
 
           <div className="text-right shrink-0">
             <span className="text-sm font-bold text-forest-900">
-              {formatCurrency(listing.price, listing.listingType)}
+              {formatPrice(listing.price, listing.listingType)}
             </span>
           </div>
         </div>

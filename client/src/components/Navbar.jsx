@@ -15,10 +15,13 @@ import {
   Bell,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { useCurrency } from '../context/CurrencyContext';
 import { notificationApi } from '../api/notificationApi';
+import UserAvatar from './UserAvatar';
 
 const Navbar = () => {
   const { user, logout } = useAuth();
+  const { currency, setCurrency, toggleCurrency } = useCurrency();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -81,7 +84,7 @@ const Navbar = () => {
   };
 
   const navLinkClass = ({ isActive }) =>
-    `text-sm font-medium transition-colors px-3 py-1.5 rounded-lg ${
+    `text-xs lg:text-[13px] font-medium transition-colors px-2.5 py-1.5 rounded-lg whitespace-nowrap ${
       isActive
         ? 'text-forest-900 bg-forest-100/70 font-semibold'
         : 'text-dark-800 hover:text-forest-800 hover:bg-black/5'
@@ -99,11 +102,11 @@ const Navbar = () => {
           {/* Logo & Tagline */}
           <Link to="/" className="flex items-center gap-2.5 group">
             <div className="w-10 h-10 rounded-xl bg-forest-800 text-white flex items-center justify-center font-bold text-lg shadow-sm group-hover:scale-105 transition-transform">
-              <span className="font-editorial italic">R</span>
+              <span className="font-editorial italic">S</span>
             </div>
             <div>
               <span className="text-xl font-bold tracking-tight text-forest-900 font-editorial">
-                ReClothing
+                STYLECYCLE
               </span>
               <span className="hidden sm:block text-[10px] uppercase tracking-wider font-semibold text-muted-500">
                 Campus Thrift
@@ -112,13 +115,21 @@ const Navbar = () => {
           </Link>
 
           {/* Desktop Navigation Links */}
-          <nav className="hidden md:flex items-center gap-1.5">
+          <nav className="hidden lg:flex items-center gap-1">
             <NavLink to="/" className={navLinkClass}>
               Home
             </NavLink>
             <NavLink to="/marketplace" className={navLinkClass}>
-              Explore Marketplace
+              Marketplace
             </NavLink>
+            <NavLink to="/leaderboard" className={navLinkClass}>
+              Leaderboard
+            </NavLink>
+            {user && (
+              <NavLink to="/exchange-matches" className={navLinkClass}>
+                AI Matches
+              </NavLink>
+            )}
             {user && (
               <NavLink to="/messages" className={navLinkClass}>
                 Messages
@@ -132,7 +143,33 @@ const Navbar = () => {
           </nav>
 
           {/* Right Action / Auth Buttons */}
-          <div className="hidden md:flex items-center gap-3">
+          <div className="hidden sm:flex items-center gap-2.5">
+            {/* Clean Segmented Currency Switcher */}
+            <div className="inline-flex items-center p-0.5 rounded-full border border-forest-200/80 bg-forest-50/60 shadow-subtle">
+              <button
+                type="button"
+                onClick={() => setCurrency('INR')}
+                className={`px-2.5 py-1 rounded-full text-xs font-semibold transition-all ${
+                  currency === 'INR'
+                    ? 'bg-forest-800 text-white shadow-sm'
+                    : 'text-forest-700 hover:text-forest-950'
+                }`}
+              >
+                ₹ INR
+              </button>
+              <button
+                type="button"
+                onClick={() => setCurrency('USD')}
+                className={`px-2.5 py-1 rounded-full text-xs font-semibold transition-all ${
+                  currency === 'USD'
+                    ? 'bg-forest-800 text-white shadow-sm'
+                    : 'text-forest-700 hover:text-forest-950'
+                }`}
+              >
+                $ USD
+              </button>
+            </div>
+
             {user ? (
               <>
                 <Link to="/sell" className="btn-primary">
@@ -205,23 +242,13 @@ const Navbar = () => {
                   <button
                     type="button"
                     onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
-                    className="flex items-center gap-2 p-1.5 rounded-full border border-border bg-ivory-50 hover:bg-ivory-100 transition-colors"
+                    className="flex items-center gap-2 p-1 rounded-full border border-border bg-ivory-50 hover:bg-ivory-100 transition-colors"
                   >
-                    {user.avatar ? (
-                      <img
-                        src={user.avatar}
-                        alt={user.name}
-                        className="w-8 h-8 rounded-full object-cover"
-                      />
-                    ) : (
-                      <div className="w-8 h-8 rounded-full bg-forest-800 text-white flex items-center justify-center text-xs font-bold">
-                        {user.name?.charAt(0).toUpperCase()}
-                      </div>
-                    )}
+                    <UserAvatar name={user.name} avatar={user.avatar} size="sm" />
                     <span className="text-xs font-semibold text-dark-900 max-w-[100px] truncate pr-1">
                       {user.name?.split(' ')[0]}
                     </span>
-                    <ChevronDown className="w-3.5 h-3.5 text-muted-500" />
+                    <ChevronDown className="w-3.5 h-3.5 text-muted-500 mr-1" />
                   </button>
 
                   {/* Dropdown Menu */}
@@ -311,7 +338,7 @@ const Navbar = () => {
           </div>
 
           {/* Mobile Menu Button */}
-          <div className="flex md:hidden items-center gap-2">
+          <div className="flex lg:hidden items-center gap-2">
             <button
               type="button"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -338,6 +365,14 @@ const Navbar = () => {
             <NavLink to="/marketplace" className={navLinkClass}>
               Explore Marketplace
             </NavLink>
+            <NavLink to="/leaderboard" className={navLinkClass}>
+              Leaderboard
+            </NavLink>
+            {user && (
+              <NavLink to="/exchange-matches" className={navLinkClass}>
+                🔄 AI Matches
+              </NavLink>
+            )}
             {user && (
               <NavLink to="/messages" className={navLinkClass}>
                 Messages
@@ -354,17 +389,7 @@ const Navbar = () => {
             {user ? (
               <div className="space-y-2">
                 <div className="flex items-center gap-3 px-3 py-2 bg-ivory-100 rounded-xl">
-                  {user.avatar ? (
-                    <img
-                      src={user.avatar}
-                      alt={user.name}
-                      className="w-9 h-9 rounded-full object-cover"
-                    />
-                  ) : (
-                    <div className="w-9 h-9 rounded-full bg-forest-800 text-white flex items-center justify-center font-bold text-sm">
-                      {user.name?.charAt(0).toUpperCase()}
-                    </div>
-                  )}
+                  <UserAvatar name={user.name} avatar={user.avatar} size="sm" />
                   <div className="min-w-0">
                     <div className="flex items-center gap-1.5">
                       <p className="text-sm font-bold text-dark-900 truncate">

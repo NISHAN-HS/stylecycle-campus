@@ -25,6 +25,7 @@ import LoadingSpinner from '../components/LoadingSpinner';
 import EmptyState from '../components/EmptyState';
 import ConfirmModal from '../components/ConfirmModal';
 import MeetupPassModal from '../components/MeetupPassModal';
+import QrExchangeVerificationModal from '../components/QrExchangeVerificationModal';
 import ReviewModal from '../components/ReviewModal';
 import toast from 'react-hot-toast';
 
@@ -46,6 +47,10 @@ const MyRequests = () => {
   // Review Modal state
   const [reviewModalData, setReviewModalData] = useState(null);
   const [reviewModalOpen, setReviewModalOpen] = useState(false);
+
+  // QR Handshake Modal state
+  const [qrModalOpen, setQrModalOpen] = useState(false);
+  const [selectedQrRequest, setSelectedQrRequest] = useState(null);
 
   const fetchRequests = async () => {
     try {
@@ -326,6 +331,16 @@ const MyRequests = () => {
                       <ShieldCheck className="w-3.5 h-3.5 mr-1" />
                       View Meetup Pass
                     </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSelectedQrRequest(req);
+                        setQrModalOpen(true);
+                      }}
+                      className="btn-primary text-xs px-3.5 py-1.5 font-semibold bg-emerald-700 hover:bg-emerald-800"
+                    >
+                      QR Handshake Pass
+                    </button>
                   </div>
                 )}
               </div>
@@ -485,6 +500,17 @@ const MyRequests = () => {
           setSelectedPassRequest(null);
         }}
         request={selectedPassRequest}
+      />
+
+      {/* QR Handshake Modal */}
+      <QrExchangeVerificationModal
+        isOpen={qrModalOpen}
+        onClose={() => {
+          setQrModalOpen(false);
+          setSelectedQrRequest(null);
+        }}
+        request={selectedQrRequest}
+        onVerifiedSuccess={fetchRequests}
       />
 
       {/* Seller Review Modal */}

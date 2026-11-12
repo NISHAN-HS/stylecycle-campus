@@ -17,6 +17,9 @@ import { userApi } from '../api/userApi';
 import { formatDate } from '../utils/formatDate';
 import ProductGrid from '../components/ProductGrid';
 import LoadingSpinner from '../components/LoadingSpinner';
+import StudentVerificationModal from '../components/StudentVerificationModal';
+import UserAvatar from '../components/UserAvatar';
+import { ShieldCheck, Award, Trophy, Sparkles } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 const Profile = () => {
@@ -24,6 +27,7 @@ const Profile = () => {
   const [profileStats, setProfileStats] = useState(null);
   const [wishlistItems, setWishlistItems] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [verifyModalOpen, setVerifyModalOpen] = useState(false);
 
   // Edit profile state
   const [editing, setEditing] = useState(false);
@@ -99,21 +103,27 @@ const Profile = () => {
       <div className="bg-white border border-border rounded-3xl p-6 sm:p-10 shadow-card">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 pb-8 border-b border-border">
           <div className="flex items-center gap-5">
-            {user?.avatar ? (
-              <img
-                src={user.avatar}
-                alt={user.name}
-                className="w-20 h-20 sm:w-24 sm:h-24 rounded-full object-cover border-2 border-forest-800 shadow-sm"
-              />
-            ) : (
-              <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-forest-800 text-white flex items-center justify-center text-3xl font-editorial font-bold shadow-sm">
-                {user?.name?.charAt(0)}
-              </div>
-            )}
+            <UserAvatar name={user?.name} avatar={user?.avatar} size="xl" className="border-2 border-forest-800" />
             <div>
-              <span className="text-xs font-bold uppercase tracking-wider text-forest-700">
-                Verified Campus Member
-              </span>
+              <div className="flex items-center gap-2 mb-1">
+                {user?.isVerifiedStudent ? (
+                  <span className="inline-flex items-center gap-1 text-[11px] font-bold uppercase tracking-wider bg-forest-800 text-white px-2.5 py-0.5 rounded-full shadow-sm">
+                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-300" />
+                    Verified Campus Student
+                  </span>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => setVerifyModalOpen(true)}
+                    className="inline-flex items-center gap-1 text-[11px] font-bold uppercase tracking-wider bg-amber-100 hover:bg-amber-200 text-amber-900 border border-amber-300 px-2.5 py-0.5 rounded-full transition-colors"
+                  >
+                    <span>⚠️ Verify Student Status (Get Badge)</span>
+                  </button>
+                )}
+                <span className="text-[11px] font-bold px-2 py-0.5 bg-emerald-100 text-emerald-800 rounded-full">
+                  Trust Score: {user?.reputationScore || 85}/100
+                </span>
+              </div>
               <h1 className="text-2xl sm:text-3xl font-bold text-dark-900 font-editorial">
                 {user?.name}
               </h1>
@@ -124,9 +134,19 @@ const Profile = () => {
                 <Mail className="w-4 h-4 text-forest-700" />
                 <span>{user?.email}</span>
               </p>
-              <p className="text-xs text-muted-500 mt-1 flex items-center gap-1.5">
+              <div className="flex flex-wrap gap-1.5 mt-2">
+                {(user?.badges || ['Active Campus Member']).map((b, idx) => (
+                  <span
+                    key={idx}
+                    className="px-2 py-0.5 rounded-md bg-forest-50 border border-forest-200 text-[10px] font-semibold text-forest-900"
+                  >
+                    🏅 {b}
+                  </span>
+                ))}
+              </div>
+              <p className="text-xs text-muted-500 mt-2 flex items-center gap-1.5">
                 <Calendar className="w-3.5 h-3.5" />
-                <span>Joined ReClothing on {formatDate(user?.createdAt)}</span>
+                <span>Joined StyleCycle on {formatDate(user?.createdAt)}</span>
               </p>
             </div>
           </div>
@@ -268,6 +288,15 @@ const Profile = () => {
           onClearFilters={null}
         />
       </div>
+
+      {/* Student OTP Verification Modal */}
+      <StudentVerificationModal
+        isOpen={verifyModalOpen}
+        onClose={() => setVerifyModalOpen(false)}
+        onVerified={() => {
+          fetchProfileData();
+        }}
+      />
     </div>
   );
 };

@@ -21,9 +21,18 @@ const messageSchema = new mongoose.Schema(
     },
     text: {
       type: String,
-      required: [true, 'Message text cannot be empty'],
+      default: '',
       trim: true,
       maxlength: [1000, 'Message cannot exceed 1000 characters'],
+    },
+    imageUrl: {
+      type: String,
+      default: '',
+    },
+    locationData: {
+      name: { type: String, default: '' },
+      lat: { type: Number, default: null },
+      lng: { type: Number, default: null },
     },
     read: {
       type: Boolean,

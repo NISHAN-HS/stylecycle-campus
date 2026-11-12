@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
+import { io } from 'socket.io-client';
 import {
   MessageSquare,
   Send,
@@ -9,6 +10,9 @@ import {
   ArrowLeft,
   Circle,
   Clock,
+  MapPin,
+  Image as ImageIcon,
+  CheckCheck,
 } from 'lucide-react';
 import { messageApi } from '../api/messageApi';
 import { useAuth } from '../context/AuthContext';
@@ -31,8 +35,49 @@ const Messages = () => {
   const [loading, setLoading] = useState(true);
   const [messagesLoading, setMessagesLoading] = useState(false);
   const [sending, setSending] = useState(false);
+  const [onlineUserIds, setOnlineUserIds] = useState([]);
+  const [isTyping, setIsTyping] = useState(false);
 
+  const socketRef = useRef(null);
   const messagesEndRef = useRef(null);
+
+  // Initialize Socket.IO connection
+  useEffect(() => {
+    if (!user?._id) return;
+
+    const socketUrl = import.meta.env.VITE_API_URL
+      ? import.meta.env.VITE_API_URL.replace('/api', '')
+      : 'http://localhost:5001';
+
+    socketRef.current = io(socketUrl, {
+      withCredentials: true,
+    });
+
+    socketRef.current.emit('setup', user._id);
+
+    socketRef.current.on('user_status_change', (data) => {
+      if (data.onlineUserIds) {
+        setOnlineUserIds(data.onlineUserIds);
+      }
+    });
+
+    socketRef.current.on('message_received', (incomingMessage) => {
+      setMessages((prev) => [...prev, incomingMessage]);
+      scrollToBottom();
+    });
+
+    socketRef.current.on('user_typing', () => {
+      setIsTyping(true);
+    });
+
+    socketRef.current.on('user_stop_typing', () => {
+      setIsTyping(false);
+    });
+
+    return () => {
+      if (socketRef.current) socketRef.current.disconnect();
+    };
+  }, [user]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -117,6 +162,15 @@ const Messages = () => {
       if (res && res.data) {
         setMessages((prev) => [...prev, res.data]);
         setNewMessage('');
+
+        // Real-time broadcast via socket
+        if (socketRef.current) {
+          socketRef.current.emit('send_instant_message', {
+            ...res.data,
+            recipientId: activePartner._id,
+          });
+        }
+
         // Refresh conversations in background
         const convRes = await messageApi.getConversations();
         if (convRes && convRes.data) setConversations(convRes.data);
@@ -266,11 +320,29 @@ const Messages = () => {
                   )}
 
                   <div className="min-w-0">
-                    <h3 className="text-sm font-bold text-dark-900 truncate">
-                      {activePartner.name}
-                    </h3>
+                    <div className="flex items-center gap-1.5">
+                      <h3 className="text-sm font-bold text-dark-900 truncate">
+                        {activePartner.name}
+                      </h3>
+                      <span
+                        className={`w-2 h-2 rounded-full ${
+                          onlineUserIds.includes(activePartner._id)
+                            ? 'bg-emerald-500'
+                            : 'bg-gray-300'
+                        }`}
+                        title={
+                          onlineUserIds.includes(activePartner._id)
+                            ? 'Online now'
+                            : 'Offline'
+                        }
+                      />
+                    </div>
                     <p className="text-[11px] text-muted-500 truncate">
-                      {activePartner.college || 'Campus Peer'}
+                      {onlineUserIds.includes(activePartner._id) ? (
+                        <span className="text-emerald-700 font-semibold">Active now</span>
+                      ) : (
+                        activePartner.college || 'Campus Peer'
+                      )}
                     </p>
                   </div>
                 </div>

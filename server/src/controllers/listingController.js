@@ -32,12 +32,16 @@ const getListings = asyncHandler(async (req, res) => {
     query.status = status;
   }
 
-  // Text/Keyword search on title & description
+  // Text/Keyword search across title, description, category, size, and condition
   if (keyword && keyword.trim() !== '') {
     const safeKeyword = escapeRegex(keyword.trim());
     query.$or = [
       { title: { $regex: safeKeyword, $options: 'i' } },
       { description: { $regex: safeKeyword, $options: 'i' } },
+      { category: { $regex: safeKeyword, $options: 'i' } },
+      { condition: { $regex: safeKeyword, $options: 'i' } },
+      { size: { $regex: safeKeyword, $options: 'i' } },
+      { exchangePreference: { $regex: safeKeyword, $options: 'i' } },
     ];
   }
 

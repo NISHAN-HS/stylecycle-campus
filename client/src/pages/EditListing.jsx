@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { listingApi } from '../api/listingApi';
 import { useAuth } from '../context/AuthContext';
+import { useCurrency } from '../context/CurrencyContext';
 import LoadingSpinner from '../components/LoadingSpinner';
 import ErrorMessage from '../components/ErrorMessage';
 import toast from 'react-hot-toast';
@@ -24,6 +25,7 @@ const EditListing = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { currency, currencySymbol } = useCurrency();
 
   const [formData, setFormData] = useState({
     title: '',
@@ -302,10 +304,12 @@ const EditListing = () => {
             {formData.listingType === 'For Sale' && (
               <div>
                 <label className="block text-xs font-bold text-dark-900 uppercase tracking-wider mb-1.5">
-                  Price ($)
+                  Price ({currencySymbol} {currency})
                 </label>
                 <div className="relative">
-                  <DollarSign className="w-4 h-4 text-muted-400 absolute left-3.5 top-3" />
+                  <span className="w-4 h-4 text-muted-500 absolute left-3.5 top-2.5 font-bold text-sm">
+                    {currencySymbol}
+                  </span>
                   <input
                     type="number"
                     min="0"

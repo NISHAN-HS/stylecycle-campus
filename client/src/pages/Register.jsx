@@ -75,7 +75,7 @@ const Register = () => {
             <Sparkles className="w-6 h-6" />
           </div>
           <h1 className="text-2xl font-bold text-dark-900 font-editorial">
-            Join the ReClothing Community
+            Join the StyleCycle Community
           </h1>
           <p className="text-xs text-muted-600 mt-1">
             Create your campus profile to buy, sell, and swap pre-loved fashion.
@@ -133,7 +133,7 @@ const Register = () => {
                 name="college"
                 value={formData.college}
                 onChange={handleChange}
-                placeholder="e.g. Stanford University"
+                placeholder="e.g. Presidency University, RVCE, PES University, BMSCE"
                 className={`input-field pl-10 ${errors.college ? 'border-rose-400 focus:border-rose-500' : ''}`}
               />
             </div>

@@ -10,6 +10,7 @@ import {
   RotateCcw,
 } from 'lucide-react';
 import { listingApi } from '../api/listingApi';
+import { useCurrency } from '../context/CurrencyContext';
 import ProductGrid from '../components/ProductGrid';
 import ErrorMessage from '../components/ErrorMessage';
 
@@ -20,6 +21,7 @@ const LISTING_TYPES = ['All', 'For Sale', 'For Exchange'];
 
 const Marketplace = () => {
   const [searchParams, setSearchParams] = useSearchParams();
+  const { currencySymbol } = useCurrency();
 
   // State derived from URL query parameters
   const [keyword, setKeyword] = useState(searchParams.get('keyword') || '');
@@ -348,7 +350,7 @@ const Marketplace = () => {
             {/* Price Range Filter */}
             <div>
               <label className="block text-xs font-semibold text-dark-900 uppercase tracking-wider mb-2">
-                Price Range ($)
+                Price Range ({currencySymbol})
               </label>
               <div className="flex items-center gap-2">
                 <input

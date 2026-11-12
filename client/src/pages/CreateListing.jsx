@@ -12,6 +12,8 @@ import {
   Check,
 } from 'lucide-react';
 import { listingApi } from '../api/listingApi';
+import { useCurrency } from '../context/CurrencyContext';
+import AiListingAssistant from '../components/AiListingAssistant';
 import toast from 'react-hot-toast';
 
 const CATEGORIES = ['Clothing', 'Shoes', 'Accessories', 'Bags', 'Books', 'Other'];
@@ -26,6 +28,7 @@ const SAMPLE_PREVIEWS = [
 
 const CreateListing = () => {
   const navigate = useNavigate();
+  const { currency, currencySymbol } = useCurrency();
 
   const [formData, setFormData] = useState({
     title: '',
@@ -168,6 +171,23 @@ const CreateListing = () => {
           </p>
         </div>
 
+        {/* AI-Powered Smart Listing & Pricing Assistant */}
+        <AiListingAssistant
+          currentImageUrl={formData.images[0]}
+          onApplySuggestion={(aiData) => {
+            setFormData((prev) => ({
+              ...prev,
+              title: aiData.title || prev.title,
+              category: aiData.category || prev.category,
+              condition: aiData.condition || prev.condition,
+              size: aiData.size || prev.size,
+              price: aiData.price !== undefined ? String(aiData.price) : prev.price,
+              description: aiData.description || prev.description,
+              exchangePreference: aiData.exchangePreference || prev.exchangePreference,
+            }));
+          }}
+        />
+
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Listing Type Toggle */}
           <div>
@@ -185,7 +205,7 @@ const CreateListing = () => {
                 }`}
               >
                 <Tag className="w-4 h-4 text-forest-800" />
-                For Sale (Cash/Venmo)
+                For Sale (Cash / UPI)
               </button>
               <button
                 type="button"
@@ -278,10 +298,12 @@ const CreateListing = () => {
           {formData.listingType === 'For Sale' && (
             <div>
               <label className="block text-xs font-bold text-dark-900 uppercase tracking-wider mb-1.5">
-                Price (USD $) *
+                Price ({currencySymbol} {currency}) *
               </label>
               <div className="relative max-w-xs">
-                <DollarSign className="w-4 h-4 text-muted-400 absolute left-3.5 top-3" />
+                <span className="w-4 h-4 text-muted-500 absolute left-3.5 top-2.5 font-bold text-sm">
+                  {currencySymbol}
+                </span>
                 <input
                   type="number"
                   min="0"
@@ -289,7 +311,7 @@ const CreateListing = () => {
                   name="price"
                   value={formData.price}
                   onChange={handleTextChange}
-                  placeholder="25"
+                  placeholder={currency === 'INR' ? '299' : '15'}
                   className={`input-field pl-10 ${errors.price ? 'border-rose-400' : ''}`}
                 />
               </div>

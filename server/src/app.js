@@ -11,6 +11,7 @@ const dashboardRoutes = require('./routes/dashboardRoutes');
 const messageRoutes = require('./routes/messageRoutes');
 const reviewRoutes = require('./routes/reviewRoutes');
 const notificationRoutes = require('./routes/notificationRoutes');
+const featureRoutes = require('./routes/featureRoutes');
 const { notFound, errorHandler } = require('./middleware/errorMiddleware');
 
 const app = express();
@@ -63,7 +64,7 @@ app.use(cookieParser());
 app.get('/api/health', (req, res) => {
   res.status(200).json({
     success: true,
-    message: 'ReClothing API is online and healthy.',
+    message: 'StyleCycle API is online and healthy.',
     timestamp: new Date().toISOString(),
   });
 });
@@ -77,6 +78,7 @@ app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/messages', messageRoutes);
 app.use('/api/reviews', reviewRoutes);
 app.use('/api/notifications', notificationRoutes);
+app.use('/api/features', featureRoutes);
 
 // Error Handling
 app.use(notFound);

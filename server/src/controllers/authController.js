@@ -68,7 +68,7 @@ const registerUser = asyncHandler(async (req, res) => {
     role: isAdmin ? 'admin' : 'user',
   });
 
-  sendTokenResponse(user, 201, res, 'Account created successfully! Welcome to ReClothing.');
+  sendTokenResponse(user, 201, res, 'Account created successfully! Welcome to StyleCycle.');
 });
 
 // @desc    Authenticate user & issue HTTP-only cookie

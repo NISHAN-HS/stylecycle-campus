@@ -4,6 +4,8 @@ dotenv.config();
 
 const connectDB = require('./config/db');
 const app = require('./app');
+const http = require('http');
+const initSocket = require('./socket');
 
 const PORT = process.env.PORT || 5001;
 
@@ -12,8 +14,12 @@ const startServer = async () => {
   try {
     await connectDB();
 
-    const server = app.listen(PORT, () => {
-      console.log(`[SERVER] ReClothing API running in ${process.env.NODE_ENV || 'development'} mode on port ${PORT}`);
+    const server = http.createServer(app);
+    const io = initSocket(server);
+    app.set('io', io);
+
+    server.listen(PORT, () => {
+      console.log(`[SERVER] StyleCycle API & Socket.IO running in ${process.env.NODE_ENV || 'development'} mode on port ${PORT}`);
       console.log(`[SERVER] Health check available at http://localhost:${PORT}/api/health`);
     });
 

@@ -23,11 +23,12 @@ import {
 import { listingApi } from '../api/listingApi';
 import { reviewApi } from '../api/reviewApi';
 import { useAuth } from '../context/AuthContext';
-import { formatCurrency } from '../utils/formatCurrency';
+import { useCurrency } from '../context/CurrencyContext';
 import { formatDate } from '../utils/formatDate';
 import RequestModal from '../components/RequestModal';
 import LoadingSpinner from '../components/LoadingSpinner';
 import ErrorMessage from '../components/ErrorMessage';
+import UserAvatar from '../components/UserAvatar';
 import toast from 'react-hot-toast';
 
 const FALLBACK_IMAGE = 'https://images.unsplash.com/photo-1489987707025-afc232f7ea0f?auto=format&fit=crop&w=800&q=80';
@@ -36,6 +37,7 @@ const ListingDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { user, toggleWishlist, isInWishlist } = useAuth();
+  const { formatPrice } = useCurrency();
 
   const [listing, setListing] = useState(null);
   const [selectedImage, setSelectedImage] = useState(0);
@@ -272,7 +274,7 @@ const ListingDetails = () => {
 
             <div className="mt-4 flex items-baseline gap-3">
               <span className="text-3xl font-extrabold text-forest-900 font-editorial">
-                {formatCurrency(listing.price, listing.listingType)}
+                {formatPrice(listing.price, listing.listingType)}
               </span>
               {listing.listingType === 'For Exchange' && (
                 <span className="text-xs font-medium text-emerald-800 bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-full">
@@ -400,17 +402,7 @@ const ListingDetails = () => {
 
           {/* Seller Card */}
           <div className="bg-white p-4 rounded-2xl border border-border shadow-subtle flex items-center gap-4">
-            {listing.seller?.avatar ? (
-              <img
-                src={listing.seller.avatar}
-                alt={listing.seller.name}
-                className="w-12 h-12 rounded-full object-cover border border-border"
-              />
-            ) : (
-              <div className="w-12 h-12 rounded-full bg-forest-100 text-forest-800 flex items-center justify-center font-bold text-base">
-                {listing.seller?.name?.charAt(0) || <User className="w-6 h-6" />}
-              </div>
-            )}
+            <UserAvatar name={listing.seller?.name} avatar={listing.seller?.avatar} size="lg" />
             <div className="min-w-0 flex-1">
               <div className="flex items-center justify-between">
                 <h4 className="text-sm font-bold text-dark-900 truncate">
@@ -443,7 +435,7 @@ const ListingDetails = () => {
           <div className="flex items-start gap-2.5 p-3.5 bg-amber-50/70 border border-amber-200/70 rounded-2xl text-[11px] text-amber-900 leading-relaxed">
             <Info className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" />
             <span>
-              <strong>ReClothing Campus Note:</strong> Requests signal intent to buy or trade. No online credit card transactions occur on ReClothing. Always meet peers in verified public campus areas.
+              <strong>StyleCycle Campus Note:</strong> Requests signal intent to buy or trade. No online credit card transactions occur on StyleCycle. Always meet peers in verified public campus areas.
             </span>
           </div>
         </div>

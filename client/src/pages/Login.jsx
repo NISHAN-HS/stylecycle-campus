@@ -63,7 +63,7 @@ const Login = () => {
             <Lock className="w-6 h-6" />
           </div>
           <h1 className="text-2xl font-bold text-dark-900 font-editorial">
-            Welcome Back to ReClothing
+            Welcome Back to StyleCycle
           </h1>
           <p className="text-xs text-muted-600 mt-1">
             Sign in to manage your campus listings and trade requests.
@@ -79,19 +79,19 @@ const Login = () => {
           <div className="grid grid-cols-2 gap-2 text-[11px]">
             <button
               type="button"
-              onClick={() => handleQuickDemo('elena@campus.edu')}
+              onClick={() => handleQuickDemo('ananya@rvce.edu.in')}
               className="px-2.5 py-1.5 bg-white border border-border rounded-xl text-left hover:border-forest-800 transition-colors truncate"
-              title="Elena (Seller with Vintage Jacket & Boots)"
+              title="Ananya Sharma (RVCE Bengaluru)"
             >
-              👩‍🎓 <strong>Elena</strong> (Seller)
+              👩‍🎓 <strong>Ananya</strong> (RVCE)
             </button>
             <button
               type="button"
-              onClick={() => handleQuickDemo('dev@campus.edu')}
+              onClick={() => handleQuickDemo('dev@presidencyuniversity.in')}
               className="px-2.5 py-1.5 bg-white border border-border rounded-xl text-left hover:border-forest-800 transition-colors truncate"
-              title="Dev (Buyer & Tech items seller)"
+              title="Dev Patel (Presidency University, Bangalore)"
             >
-              👨‍🎓 <strong>Dev</strong> (Buyer)
+              👨‍🎓 <strong>Dev</strong> (Presidency Univ)
             </button>
           </div>
         </div>
