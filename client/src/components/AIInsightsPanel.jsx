@@ -98,13 +98,9 @@ export const AIInsightsPanel = ({ analytics }) => {
               <span>Completed Campus Exchanges:</span>
               <strong className="text-white">{analytics.successfulExchanges} swaps</strong>
             </div>
-            <div className="flex justify-between items-center py-1 border-b border-forest-800/60">
+            <div className="flex justify-between items-center py-1">
               <span>Total Exchange Requests:</span>
               <strong className="text-white">{analytics.totalExchangeRequests} active</strong>
-            </div>
-            <div className="flex justify-between items-center py-1">
-              <span>Carbon Offset from Swaps:</span>
-              <strong className="text-emerald-300">{(analytics.successfulExchanges * 4.2 + 14).toFixed(1)} kg CO₂</strong>
             </div>
           </div>
         </div>
