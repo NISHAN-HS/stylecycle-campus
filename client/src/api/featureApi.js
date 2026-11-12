@@ -5,8 +5,10 @@ export const featureApi = {
   analyzeImage: (data) => api.post('/features/analyze-image', data),
   recommendPrice: (data) => api.post('/features/recommend-price', data),
 
-  // 2: Smart Exchange Matching
-  getExchangeMatches: () => api.get('/features/exchange-matches'),
+  // 2: Explainable Smart Reciprocal Exchange Matching
+  getExchangeMatches: (params = {}) => api.get('/features/exchange-matches', { params }),
+  simulateExchangeMatches: (data) => api.post('/features/exchange-matches/simulate', data),
+  getExchangeAnalytics: () => api.get('/features/exchange-analytics'),
 
   // 3: Verified Student OTP
   requestStudentOtp: (data) => api.post('/features/request-student-otp', data),

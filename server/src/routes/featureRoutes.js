@@ -3,7 +3,11 @@ const router = express.Router();
 const { protect } = require('../middleware/authMiddleware');
 const asyncHandler = require('../utils/asyncHandler');
 const { analyzeProductImage, recommendPrice } = require('../services/aiService');
-const { findExchangeMatches } = require('../services/exchangeMatchingService');
+const {
+  findReciprocalExchangeMatches,
+  getExchangeAnalytics,
+  DEFAULT_WEIGHTS,
+} = require('../services/exchangeMatchingService');
 const User = require('../models/User');
 const Request = require('../models/Request');
 const Listing = require('../models/Listing');
@@ -42,19 +46,52 @@ router.post(
   })
 );
 
-// 3. Smart Exchange Matching
+// 3. Explainable Reciprocal Exchange Matching
 router.get(
   '/exchange-matches',
   protect,
   asyncHandler(async (req, res) => {
-    const matches = await findExchangeMatches(req.user._id);
-    // Broadcast real-time leaderboard update via Socket.IO
+    const { category, condition, campus, minPrice, maxPrice, minScore, minConfidence, sort } = req.query;
+    const result = await findReciprocalExchangeMatches({
+      userId: req.user._id,
+      filters: { category, condition, campus, minPrice, maxPrice, minScore, minConfidence },
+      sort: sort || 'compatibility',
+    });
+
     const io = req.app.get('io');
     if (io) {
       io.emit('leaderboard_update');
     }
 
-    res.status(200).json({ success: true, data: matches });
+    res.status(200).json({ success: true, data: result });
+  })
+);
+
+// 3b. What-If Simulator Endpoint (Simulate wanted categories/preferences without saving)
+router.post(
+  '/exchange-matches/simulate',
+  protect,
+  asyncHandler(async (req, res) => {
+    const { simulatedPreferences, filters, sort, customWeights } = req.body;
+    const result = await findReciprocalExchangeMatches({
+      userId: req.user._id,
+      simulatedPreferences,
+      filters: filters || {},
+      sort: sort || 'compatibility',
+      customWeights: customWeights || {},
+    });
+
+    res.status(200).json({ success: true, data: result });
+  })
+);
+
+// 3c. Real MongoDB Exchange Analytics & AI Insights
+router.get(
+  '/exchange-analytics',
+  protect,
+  asyncHandler(async (req, res) => {
+    const analytics = await getExchangeAnalytics();
+    res.status(200).json({ success: true, data: analytics });
   })
 );
 
