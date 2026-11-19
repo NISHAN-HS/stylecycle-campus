@@ -276,6 +276,102 @@ const cancelRequest = asyncHandler(async (req, res) => {
   });
 });
 
+// @desc    Update Pickup Schedule (Date & Time)
+// @route   PATCH /api/requests/:id/schedule-pickup
+// @access  Private (Buyer or Seller)
+const schedulePickup = asyncHandler(async (req, res) => {
+  const { date, time, meetupLocation } = req.body;
+  const request = await Request.findById(req.params.id).populate('listing buyer seller');
+
+  if (!request) {
+    return res.status(404).json({ success: false, message: 'Request not found.' });
+  }
+
+  const isBuyer = request.buyer._id.toString() === req.user._id.toString();
+  const isSeller = request.seller._id.toString() === req.user._id.toString();
+
+  if (!isBuyer && !isSeller) {
+    return res.status(403).json({ success: false, message: 'Not authorized for this transaction schedule.' });
+  }
+
+  if (date) request.pickupSchedule.date = date;
+  if (time) request.pickupSchedule.time = time;
+  if (meetupLocation) request.meetupLocation = meetupLocation;
+
+  if (isSeller) {
+    request.pickupSchedule.sellerConfirmed = true;
+  } else {
+    request.pickupSchedule.buyerConfirmed = true;
+  }
+
+  await request.save();
+
+  const recipientId = isSeller ? request.buyer._id : request.seller._id;
+  const Notification = require('../models/Notification');
+  await Notification.create({
+    recipient: recipientId,
+    sender: req.user._id,
+    title: 'Pickup Scheduled / Updated',
+    message: `${req.user.name} proposed campus pickup on ${date || request.pickupSchedule.date} at ${time || request.pickupSchedule.time} (${request.meetupLocation}).`,
+    link: '/my-requests',
+    type: 'request',
+  });
+
+  res.status(200).json({
+    success: true,
+    message: 'Pickup schedule updated successfully.',
+    data: request,
+  });
+});
+
+// @desc    Process Payment (Cash, UPI, Gateway Test Mode)
+// @route   POST /api/requests/:id/pay
+// @access  Private (Buyer only)
+const processPayment = asyncHandler(async (req, res) => {
+  const { paymentMethod, upiId, transactionId } = req.body;
+  const request = await Request.findById(req.params.id).populate('listing seller');
+
+  if (!request) {
+    return res.status(404).json({ success: false, message: 'Request not found.' });
+  }
+
+  if (request.buyer.toString() !== req.user._id.toString()) {
+    return res.status(403).json({ success: false, message: 'Only buyer can process payment.' });
+  }
+
+  request.paymentMethod = paymentMethod || 'Cash on Campus Pickup';
+  request.paymentDetails = {
+    upiId: upiId || '',
+    transactionId: transactionId || `TXN-SC-${Date.now()}`,
+    amount: request.listing?.price || 0,
+  };
+
+  // If cash, status stays pending until pickup handover. If UPI/Gateway test mode, marked paid.
+  if (paymentMethod === 'Cash on Campus Pickup') {
+    request.paymentStatus = 'pending';
+  } else {
+    request.paymentStatus = 'paid';
+  }
+
+  await request.save();
+
+  const Notification = require('../models/Notification');
+  await Notification.create({
+    recipient: request.seller._id,
+    sender: req.user._id,
+    title: `Payment Updated: ${request.paymentMethod}`,
+    message: `Payment method set to ${request.paymentMethod} (Status: ${request.paymentStatus}).`,
+    link: '/my-requests',
+    type: 'request',
+  });
+
+  res.status(200).json({
+    success: true,
+    message: `Payment method updated to ${request.paymentMethod}.`,
+    data: request,
+  });
+});
+
 module.exports = {
   createRequest,
   getSentRequests,
@@ -283,4 +379,6 @@ module.exports = {
   acceptRequest,
   rejectRequest,
   cancelRequest,
+  schedulePickup,
+  processPayment,
 };

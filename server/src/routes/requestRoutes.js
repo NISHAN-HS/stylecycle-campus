@@ -7,6 +7,8 @@ const {
   acceptRequest,
   rejectRequest,
   cancelRequest,
+  schedulePickup,
+  processPayment,
 } = require('../controllers/requestController');
 const { protect } = require('../middleware/authMiddleware');
 const validateRequest = require('../middleware/validateRequest');
@@ -34,5 +36,7 @@ router.get('/received', getReceivedRequests);
 router.patch('/:id/accept', acceptRequest);
 router.patch('/:id/reject', rejectRequest);
 router.patch('/:id/cancel', cancelRequest);
+router.patch('/:id/schedule-pickup', schedulePickup);
+router.post('/:id/pay', processPayment);
 
 module.exports = router;

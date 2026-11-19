@@ -10,6 +10,8 @@ const {
   getMyListings,
   addListingQuestion,
   answerListingQuestion,
+  setListingStatus,
+  reportListing,
 } = require('../controllers/listingController');
 const { protect } = require('../middleware/authMiddleware');
 const validateRequest = require('../middleware/validateRequest');
@@ -32,7 +34,17 @@ const createListingValidation = [
   body('category')
     .notEmpty()
     .withMessage('Category is required')
-    .isIn(['Clothing', 'Shoes', 'Accessories', 'Bags', 'Books', 'Other'])
+    .isIn([
+      'Clothing',
+      'Shoes',
+      'Accessories',
+      'Bags',
+      'Books',
+      'Electronics',
+      'Stationery',
+      'Sports equipment',
+      'Other',
+    ])
     .withMessage('Invalid category selected'),
   body('condition')
     .notEmpty()
@@ -42,7 +54,7 @@ const createListingValidation = [
   body('listingType')
     .notEmpty()
     .withMessage('Listing type is required')
-    .isIn(['For Sale', 'For Exchange'])
+    .isIn(['For Sale', 'For Exchange', 'Both'])
     .withMessage('Invalid listing type'),
 ];
 
@@ -52,6 +64,8 @@ router.get('/mine', protect, getMyListings);
 router.get('/:id', getListingById);
 router.post('/', protect, createListingValidation, validateRequest, createListing);
 router.put('/:id', protect, updateListing);
+router.patch('/:id/status', protect, setListingStatus);
+router.post('/:id/report', protect, reportListing);
 router.delete('/:id', protect, deleteListing);
 
 // Community Questions & Answers

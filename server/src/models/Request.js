@@ -50,6 +50,27 @@ const requestSchema = new mongoose.Schema(
       default: '',
       maxlength: [200, 'Exchange item description cannot exceed 200 characters'],
     },
+    paymentMethod: {
+      type: String,
+      enum: ['Cash on Campus Pickup', 'UPI Payment', 'Online Gateway (Test Mode)', 'N/A (Exchange)'],
+      default: 'Cash on Campus Pickup',
+    },
+    paymentStatus: {
+      type: String,
+      enum: ['pending', 'paid', 'refunded'],
+      default: 'pending',
+    },
+    paymentDetails: {
+      transactionId: { type: String, default: '' },
+      upiId: { type: String, default: '' },
+      amount: { type: Number, default: 0 },
+    },
+    pickupSchedule: {
+      date: { type: String, default: '' },
+      time: { type: String, default: '' },
+      sellerConfirmed: { type: Boolean, default: false },
+      buyerConfirmed: { type: Boolean, default: false },
+    },
     status: {
       type: String,
       enum: ['pending', 'accepted', 'rejected', 'cancelled', 'completed'],

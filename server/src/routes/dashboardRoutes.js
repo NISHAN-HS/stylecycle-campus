@@ -7,13 +7,18 @@ const {
   deleteListingByAdmin,
   getAdminUsers,
   exportPlatformData,
+  getSellerAnalytics,
 } = require('../controllers/dashboardController');
 const { protect, adminOnly } = require('../middleware/authMiddleware');
 
 const router = express.Router();
 
-// Strict security: Both authenticated AND administrator privileges required
 router.use(protect);
+
+// Student Seller Analytics (accessible by any authenticated student)
+router.get('/seller-analytics', getSellerAnalytics);
+
+// Admin-only routes
 router.use(adminOnly);
 
 router.get('/stats', getDashboardStats);

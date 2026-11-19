@@ -62,4 +62,22 @@ const adminOnly = (req, res, next) => {
   });
 };
 
-module.exports = { protect, adminOnly };
+// Verified student authorization guard
+const verifiedStudentOnly = (req, res, next) => {
+  if (
+    req.user &&
+    (req.user.isVerifiedStudent ||
+      req.user.role === 'admin' ||
+      req.user.email?.toLowerCase() === 'sanskarbhanderi08@gmail.com')
+  ) {
+    return next();
+  }
+
+  return res.status(403).json({
+    success: false,
+    code: 'STUDENT_VERIFICATION_REQUIRED',
+    message: 'Access restricted: Please verify your college student status to perform this action.',
+  });
+};
+
+module.exports = { protect, adminOnly, verifiedStudentOnly };

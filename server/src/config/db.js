@@ -1,4 +1,12 @@
 const mongoose = require('mongoose');
+const dns = require('dns');
+
+// In environments where default ISP DNS fails to resolve SRV records (ECONNREFUSED)
+try {
+  dns.setServers(['8.8.8.8', '1.1.1.1']);
+} catch (e) {
+  // Ignore fallback error
+}
 
 const connectDB = async () => {
   try {

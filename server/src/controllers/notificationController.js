@@ -41,7 +41,25 @@ const markAllAsRead = asyncHandler(async (req, res) => {
   });
 });
 
+// @desc    Mark single notification as read
+// @route   PATCH /api/notifications/:id/read
+// @access  Private
+const markOneAsRead = asyncHandler(async (req, res) => {
+  const notif = await Notification.findOneAndUpdate(
+    { _id: req.params.id, recipient: req.user._id },
+    { read: true },
+    { new: true }
+  );
+
+  res.status(200).json({
+    success: true,
+    message: 'Notification marked as read.',
+    data: notif,
+  });
+});
+
 module.exports = {
   getMyNotifications,
   markAllAsRead,
+  markOneAsRead,
 };

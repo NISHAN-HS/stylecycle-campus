@@ -8,7 +8,10 @@ import ProtectedRoute from './components/ProtectedRoute';
 import Home from './pages/Home';
 import Register from './pages/Register';
 import Login from './pages/Login';
+import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
 import Marketplace from './pages/Marketplace';
+import Wishlist from './pages/Wishlist';
 import ListingDetails from './pages/ListingDetails';
 import CreateListing from './pages/CreateListing';
 import EditListing from './pages/EditListing';
@@ -32,7 +35,17 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/register" element={<Register />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/marketplace" element={<Marketplace />} />
+            <Route
+              path="/wishlist"
+              element={
+                <ProtectedRoute>
+                  <Wishlist />
+                </ProtectedRoute>
+              }
+            />
             <Route path="/listings/:id" element={<ListingDetails />} />
             <Route path="/leaderboard" element={<Leaderboard />} />
 

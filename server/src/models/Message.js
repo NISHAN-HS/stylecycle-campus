@@ -38,6 +38,26 @@ const messageSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    negotiation: {
+      isOffer: { type: Boolean, default: false },
+      offeredPrice: { type: Number, default: null },
+      status: {
+        type: String,
+        enum: ['pending', 'accepted', 'rejected', 'countered', null],
+        default: null,
+      },
+      counterPrice: { type: Number, default: null },
+    },
+    exchangeProposal: {
+      isProposal: { type: Boolean, default: false },
+      offeredListingTitle: { type: String, default: '' },
+      offeredListingId: { type: mongoose.Schema.Types.ObjectId, ref: 'Listing', default: null },
+      status: {
+        type: String,
+        enum: ['pending', 'accepted', 'rejected', null],
+        default: null,
+      },
+    },
   },
   {
     timestamps: true,

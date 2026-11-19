@@ -10,4 +10,6 @@ export const listingApi = {
   getMyListings: () => api.get('/listings/mine'),
   addQuestion: (id, question) => api.post(`/listings/${id}/questions`, { question }),
   answerQuestion: (id, questionId, answer) => api.patch(`/listings/${id}/questions/${questionId}`, { answer }),
+  setStatus: (id, status) => api.patch(`/listings/${id}/status`, { status }),
+  reportListing: (id, data) => api.post(`/listings/${id}/report`, data),
 };

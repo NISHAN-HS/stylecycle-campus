@@ -5,6 +5,10 @@ const {
   loginUser,
   logoutUser,
   getMe,
+  sendStudentOtp,
+  verifyStudentOtp,
+  forgotPassword,
+  resetPassword,
 } = require('../controllers/authController');
 const { protect } = require('../middleware/authMiddleware');
 const validateRequest = require('../middleware/validateRequest');
@@ -53,5 +57,9 @@ router.post('/register', registerValidation, validateRequest, registerUser);
 router.post('/login', loginValidation, validateRequest, loginUser);
 router.post('/logout', logoutUser);
 router.get('/me', protect, getMe);
+router.post('/send-otp', protect, sendStudentOtp);
+router.post('/verify-otp', protect, verifyStudentOtp);
+router.post('/forgot-password', forgotPassword);
+router.post('/reset-password', resetPassword);
 
 module.exports = router;

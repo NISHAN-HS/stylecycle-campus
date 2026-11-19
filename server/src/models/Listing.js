@@ -18,9 +18,56 @@ const listingSchema = new mongoose.Schema(
       type: String,
       required: [true, 'Please select a category'],
       enum: {
-        values: ['Clothing', 'Shoes', 'Accessories', 'Bags', 'Books', 'Other'],
+        values: [
+          'Clothing',
+          'Shoes',
+          'Accessories',
+          'Bags',
+          'Books',
+          'Electronics',
+          'Stationery',
+          'Sports equipment',
+          'Other',
+        ],
         message: '{VALUE} is not a supported category',
       },
+    },
+    subcategory: {
+      type: String,
+      trim: true,
+      default: '',
+    },
+    brand: {
+      type: String,
+      trim: true,
+      default: '',
+      maxlength: [80, 'Brand cannot exceed 80 characters'],
+    },
+    originalPrice: {
+      type: Number,
+      min: [0, 'Original price cannot be negative'],
+      default: 0,
+    },
+    sellingPrice: {
+      type: Number,
+      min: [0, 'Selling price cannot be negative'],
+      default: 0,
+    },
+    color: {
+      type: String,
+      trim: true,
+      default: '',
+    },
+    college: {
+      type: String,
+      trim: true,
+      default: '',
+      index: true,
+    },
+    pickupLocation: {
+      type: String,
+      trim: true,
+      default: 'College Main Gate',
     },
     price: {
       type: Number,
@@ -44,9 +91,9 @@ const listingSchema = new mongoose.Schema(
     },
     listingType: {
       type: String,
-      required: [true, 'Please select listing type (For Sale or For Exchange)'],
+      required: [true, 'Please select listing type (For Sale, For Exchange or Both)'],
       enum: {
-        values: ['For Sale', 'For Exchange'],
+        values: ['For Sale', 'For Exchange', 'Both'],
         message: '{VALUE} is not a valid listing type',
       },
       default: 'For Sale',
@@ -74,7 +121,7 @@ const listingSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ['active', 'reserved', 'exchanged', 'sold', 'inactive'],
+      enum: ['active', 'reserved', 'exchanged', 'sold', 'paused', 'inactive'],
       default: 'active',
       index: true,
     },

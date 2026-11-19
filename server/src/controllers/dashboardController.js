@@ -232,6 +232,61 @@ const exportPlatformData = asyncHandler(async (req, res) => {
   res.status(200).send(csvHeaders + csvRows);
 });
 
+// @desc    Get Student Seller Analytics & Dashboard
+// @route   GET /api/dashboard/seller-analytics
+// @access  Private
+const getSellerAnalytics = asyncHandler(async (req, res) => {
+  const userId = req.user._id;
+
+  const activeListings = await Listing.countDocuments({ seller: userId, status: 'active' });
+  const soldListings = await Listing.countDocuments({ seller: userId, status: 'sold' });
+  const exchangedListings = await Listing.countDocuments({ seller: userId, status: 'exchanged' });
+  const pausedListings = await Listing.countDocuments({ seller: userId, status: 'paused' });
+  const totalListings = await Listing.countDocuments({ seller: userId });
+
+  // Pending requests as seller
+  const pendingRequests = await Request.countDocuments({ seller: userId, status: 'pending' });
+
+  // Completed transactions and earnings
+  const completedSales = await Request.find({ seller: userId, status: 'completed', type: 'purchase' }).populate('listing');
+  const totalEarnings = completedSales.reduce((acc, curr) => acc + (curr.listing?.price || 0), 0);
+  const averageSellingPrice = completedSales.length > 0 ? Math.round(totalEarnings / completedSales.length) : 0;
+
+  // Views on student's listings
+  const userListings = await Listing.find({ seller: userId });
+  const totalViews = userListings.reduce((acc, curr) => acc + (curr.viewsCount || 0), 0);
+
+  // Most viewed products
+  const mostViewed = await Listing.find({ seller: userId }).sort({ viewsCount: -1 }).limit(5);
+
+  // Category breakdown
+  const categoryMap = {};
+  userListings.forEach((item) => {
+    categoryMap[item.category] = (categoryMap[item.category] || 0) + 1;
+  });
+
+  res.status(200).json({
+    success: true,
+    data: {
+      stats: {
+        activeListings,
+        soldListings,
+        exchangedListings,
+        pausedListings,
+        totalListings,
+        pendingRequests,
+        totalEarnings,
+        averageSellingPrice,
+        totalViews,
+      },
+      mostViewed,
+      categoryDistribution: Object.entries(categoryMap).map(([cat, count]) => ({ category: cat, count })),
+      reputationScore: req.user.reputationScore || 85,
+      sustainabilityPoints: req.user.sustainabilityPoints || 50,
+    },
+  });
+});
+
 module.exports = {
   getDashboardStats,
   getDashboardActivity,
@@ -240,4 +295,5 @@ module.exports = {
   deleteListingByAdmin,
   getAdminUsers,
   exportPlatformData,
+  getSellerAnalytics,
 };

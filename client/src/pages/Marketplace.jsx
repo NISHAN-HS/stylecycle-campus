@@ -14,10 +14,21 @@ import { useCurrency } from '../context/CurrencyContext';
 import ProductGrid from '../components/ProductGrid';
 import ErrorMessage from '../components/ErrorMessage';
 
-const CATEGORIES = ['All', 'Clothing', 'Shoes', 'Accessories', 'Bags', 'Books', 'Other'];
+const CATEGORIES = [
+  'All',
+  'Clothing',
+  'Shoes',
+  'Accessories',
+  'Bags',
+  'Books',
+  'Electronics',
+  'Stationery',
+  'Sports equipment',
+  'Other',
+];
 const CONDITIONS = ['All', 'New', 'Like New', 'Good', 'Fair'];
 const SIZES = ['All', 'XS', 'S', 'M', 'L', 'XL', 'XXL', 'One Size'];
-const LISTING_TYPES = ['All', 'For Sale', 'For Exchange'];
+const LISTING_TYPES = ['All', 'For Sale', 'For Exchange', 'Both'];
 
 const Marketplace = () => {
   const [searchParams, setSearchParams] = useSearchParams();

@@ -80,6 +80,25 @@ const userSchema = new mongoose.Schema(
         ref: 'Listing',
       },
     ],
+    // Reset Password Support
+    resetPasswordToken: {
+      type: String,
+      default: null,
+    },
+    resetPasswordExpires: {
+      type: Date,
+      default: null,
+    },
+    // Campus Domain Config
+    collegeEmailVerified: {
+      type: Boolean,
+      default: false,
+    },
+    privacySettings: {
+      showCollege: { type: Boolean, default: true },
+      showTransactions: { type: Boolean, default: true },
+      showRating: { type: Boolean, default: true },
+    },
   },
   {
     timestamps: true,
